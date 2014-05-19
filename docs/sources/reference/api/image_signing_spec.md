@@ -36,7 +36,7 @@ As Docker application packaging becomes mainstream users need to ensure that the
 There are many author/maintainers but most do not build images for wide distribution. It is expected that in the majority of situations where trust verification is important, a known image builder will be distributing images. This may be Docker (via Stackbrew Trusted Builds), a cloud provider or a software company. Understanding this helps inform how key distribution may be performed.
 
 ## Image Build Signing
-1. Optional Dockerfile `META` included in generate metadata. See (Generated Metadata)[#generated-metadata].
+1. Optional Dockerfile `META` included in generate metadata. See [Generated Metadata](#generated-metadata).
 1. Signature information added to metadata for public key verification and retrieval.
 1. Signer public key added to image to simplify key distribution in trusted situations.
 1. `--sign <gpg_email_or_ID>` argument used to pass signature information to build process. Docker signs with detached signature and ASCII armor creating a <image>.asc file. Example: `gpg -a -b <image>`
