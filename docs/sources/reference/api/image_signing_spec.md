@@ -39,18 +39,23 @@ There are many author/maintainers but most do not build images for wide distribu
 1. Optional Dockerfile `META` included in generate metadata. See (Generated Metadata)[#generated-metadata].
 1. Signature information added to metadata for public key verification and retrieval.
 1. Signer public key added to image to simplify key distribution in trusted situations.
-1. `--sign <gpg_email_or_ID>` argument used to pass signature information to build process.
+1. `--sign <gpg_email_or_ID>` argument used to pass signature information to build process. Docker signs with detached signature and ASCII armor creating a <image>.asc file. Example: `gpg -a -b <image>`
+
+## Image Transfer
+Image and detached signature file are pushed and pulled with image so the signature may be checked.
 
 ## Image Verification
 
 Image pull and verification follows current Linux package installation and verification.
 
 `docker pull <image> [-y]`
+
 `docker verify <image>`
 
 * GPG signature checked during docker pull
-* GPG verification may be disabled in a configuration file, similarly to a repository file.
+* GPG verification may be disabled in a configuration file, similar to a repository file.
 * User is prompted for public key installation unless `-y` flag is passed.
+
 
 ## Dockerfile
 The Dockerfile creates the manifest metadata stored with the image. The dockerfile is also stuffed into the image (path TBD) as a human-readable record of how the image was built.
@@ -122,10 +127,12 @@ sub   2048R/834C1E4D 2013-07-26
 
 **Pros**
 * Native GPG implementation with mature tooling
+* Web of trust verification based on GPG configuration
 
 **Cons**
 * user must add software vendors to their personal keyring.
 * not clear how the docker daemon accesses the user public keyring.
+* Web of trust signing is not widely used outside of software development community.
 
 #### Flat files
 ```
@@ -134,18 +141,24 @@ RPM-GPG-KEY-adobe-linux
 RPM-GPG-KEY-fedora-20-primary
 RPM-GPG-KEY-fedora-20-secondary
 ```
+
 **Pros**
 * Simple. Model currently used by some software vendors.
 
 **Cons**
 * Cannot leverage full GPG toolset.
-* Too simple?
+* Too simple
 
-A configuration file could be used to list trusted keyservers. If list matches signing party keyserver, use it to download public key.
+
+#### Key Distribution Options
+Each method for distributing public keys has drawbacks. Options:
+
+* [DANE protocol](http://tools.ietf.org/html/draft-wouters-dane-openpgp-02) may be used to securely download keys. It is unclear what infrastructure is needed and how widely it has been adopted.
+* Signer specifies public keyserver where key may be downloaded. A docker configuration file contains list of trusted keyservers. If list matches signing party keyserver, use it to download public key.
+* Web of trust: GPG keys may be signed as trusted from one person to another. The usefullness of these signatures improves if the web of trust can be traced back to the validating party. See [discussion](http://www.linuxfoundation.org/news-media/blogs/browse/2014/02/pgp-web-trust-delegated-trust-and-keyservers). The GPG configuration file `~/.gnupg/gpg.conf` provides support for specifying the level of trust required.
 
 ### GPG Signing and Private Keys
-GPG signing requires a public/private keypair in the GPG keyring.
-* How does the docker daemon (running as root) access the private key?
+GPG signing requires a public/private keypair in the GPG keyring. A keypair may be generated with `gpg --gen-key`. It is not clear how the docker daemon (running as root) accesses this private key during the build and signing process.
 
 ## Application Certification Model
 The Docker ecosystem enables opportunities for ISVs to distribute certified applications built on platform base layer(s). In this model each layer is signed by the author/maintainer. A certifying party then builds and signs a "metadata-only" layer that certifies the application. The metadata provides attestation that the application is certified by the party and references related policy information.
@@ -161,8 +174,6 @@ GPG is a suite of cryptographic tools compatible with OpenPGP. It relies on a we
 ## Open Questions (FIXME)
 * What signing algorithm? At least SHA-256, preferrably SHA-512
 * Should Dockerfile `META` keys be standardized while still allowing for extension? What metadata is a first-class object vs part of the extended data structure?
-* How are layer public keys distributed? Consider DANE protocol.
-* Discuss web of trust
 
 
 ## Current Metadata Output
