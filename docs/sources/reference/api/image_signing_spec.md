@@ -17,7 +17,7 @@ As Docker application packaging becomes mainstream users need to ensure that the
 
 1. **Verify offline:** Data integrity verification may be performed without connection to Internet.
 1. **Inspect image assembly:** An application may be inspected to determine how it was assembled and who assembled each layer.
-1. **Arbitrary metadata support:** Authors or maintainers may add arbirary metadata describing the applicatation to support their unique needs.
+1. **Arbitrary metadata support:** Authors or maintainers may add arbitrary metadata describing the applicatation to support their unique needs.
 1. **Application certification support:** Provide mechanism for a certifying party to certify applications built by independent software vendors (ISVs).
 1. **Apply Chain of trust model:** In the same way that a signed certificate can be traced to a trusted root CA issuer, layer ancestry built on a series of signed and trusted layers can be trusted.
 1. **Retain simplicity:** The signing model should be transparent to the end-user, if desired, and straightforward for the maintainer. Users are able to easily build images and securly pull images without excessive security burdens.
